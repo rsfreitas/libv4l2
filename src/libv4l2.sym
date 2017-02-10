@@ -1,0 +1,12 @@
+LIBV4L2_0.1 {
+    global:
+        v4l2_get_last_error;
+        v4l2_sterror;
+        v4l2_open;
+        v4l2_close;
+        v4l2_grab_image;
+        v4l2_set_setting;
+        v4l2_get_setting;
+    local:
+        *;
+};

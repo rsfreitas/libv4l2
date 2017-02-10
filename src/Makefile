@@ -1,4 +1,5 @@
-.PHONY: shared static clean dest_clean install outputdirs
+.PHONY: shared static clean dest_clean install outputdirs dev_install \
+	install_headers
 
 CC = gcc
 AR = ar
@@ -69,8 +70,14 @@ dest_clean:
 install:
 	cp -f $(TARGET_SHARED) $(USR_DIR)
 	rm -rf $(USR_DIR)/$(LIBNAME) $(USR_DIR)/$(SONAME)
-	ln -s $(USR_DIR)/$(SHARED_LIBNAME) $(USR_DIR)/$(LIBNAME)
-	ln -s $(USR_DIR)/$(SHARED_LIBNAME) $(USR_DIR)/$(SONAME)
+	ln -sf $(USR_DIR)/$(SHARED_LIBNAME) $(USR_DIR)/$(LIBNAME)
+
+install_headers:
+	$(shell [ ! -d /usr/local/include/v4l2_lib ] && mkdir -p /usr/local/include/v4l2_lib)
+	$(shell for f in `ls ../include/v4l2_lib/v_*.h | egrep -v 'v_internal.h'`; do cp -f $$f /usr/local/include/v4l2_lib; done)
+	cp -f ../include/libv4l2.h /usr/local/include
+
+dev_install: install_headers install
 
 outputdirs: $(OUTPUTDIR)
 $(OUTPUTDIR):

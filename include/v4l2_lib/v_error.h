@@ -28,7 +28,7 @@
 #define _LIBV4L2_V_ERROR_H          1
 
 #ifndef LIBV4L2_COMPILE
-# ifdef _LIBV4L2_H
+# ifndef _LIBV4L2_H
 #  error "Never use <v_error.h.h> directly; include <libv4l2.h> instead."
 # endif
 #endif

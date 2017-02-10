@@ -31,17 +31,17 @@
 # include <collections.h>
 #endif
 
-#include "v_error.h"
+#include "v4l2_lib/v_error.h"
 
 #ifdef LIBV4L2_COMPILE
 # define MAJOR_VERSION      0
 # define MINOR_VERSION      1
 # define RELEASE            1
 
-# include "v_internal.h"
+# include "v4l2_lib/v_internal.h"
 #endif
 
-#include "v_utils.h"
+#include "v4l2_lib/v_utils.h"
 
 #endif
 

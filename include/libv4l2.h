@@ -55,6 +55,14 @@ enum v4l2_model {
     V4L2_MODEL_RPI_CAMERA
 };
 
+/** Capture card channel */
+enum v4l2_channel {
+    V4L2_CHANNEL_UNKNOWN = -1,
+    V4L2_CHANNEL_TUNER,
+    V4L2_CHANNEL_COMPOSITE,
+    V4L2_CHANNEL_SVIDEO
+};
+
 /** Object to handle a v4l2 devide */
 typedef void                v4l2_t;
 

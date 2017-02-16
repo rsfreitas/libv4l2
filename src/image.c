@@ -23,7 +23,8 @@ static void destroy_v4l2_image_s(const struct cref_s *ref)
     free(i);
 }
 
-static struct v4l2_image_s *new_v4l2_image_s(void)
+static struct v4l2_image_s *new_v4l2_image_s(enum v4l2_image_format format,
+    int width, int height)
 {
     struct v4l2_image_s *i = NULL;
 
@@ -33,6 +34,10 @@ static struct v4l2_image_s *new_v4l2_image_s(void)
         errno_set(V4L2_ERROR_MALLOC);
         return NULL;
     }
+
+    i->width = width;
+    i->height = height;
+    i->format = format;
 
     /* Initialize reference count */
     i->ref.count = 1;

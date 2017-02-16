@@ -29,7 +29,30 @@
 static const char *__description[] = {
     tr_noop("Ok"),
     tr_noop("Error allocating memory internally"),
-    tr_noop("Invalid argument")
+    tr_noop("Invalid argument"),
+    tr_noop("Error setting value into the card"),
+    tr_noop("Error getting value from the card"),
+    tr_noop("Unsupported card setting"),
+    tr_noop("Unsupported memory mapping"),
+    tr_noop("Insufficiente number of internal buffers"),
+    tr_noop("Unable to query buffer status"),
+    tr_noop("Memory mapping failed"),
+    tr_noop("Memory unmapping failed"),
+    tr_noop("Unable to exchange a buffer with the driver"),
+    tr_noop("Error starting I/O streaming"),
+    tr_noop("Unable to query device capabilities"),
+    tr_noop("The device does not support single planar API"),
+    tr_noop("The device does not support I/O streaming"),
+    tr_noop("Failed to open device"),
+    tr_noop("Error setting the data format"),
+    tr_noop("Error getting the data format"),
+    tr_noop("Unable to query controls"),
+    tr_noop("Unable to query current video input"),
+    tr_noop("Unable to set the video input"),
+    tr_noop("Error selecting the video standard for current input"),
+    tr_noop("Unsupported image format"),
+    tr_noop("Unsupported card model"),
+    tr_noop("Unsupported input channel")
 };
 
 static const char *__unknown_error = tr_noop("Unknown error");

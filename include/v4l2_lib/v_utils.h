@@ -33,7 +33,15 @@
 # endif
 #endif
 
-struct v4l2_s *new_v4l2_s(void);
+int _ioctl(int fd, int request, void *argp);
+int v4l2_format_to_videodev(enum v4l2_image_format format);
+int v4l2_setting_to_videodev(enum v4l2_setting setting);
+bool is_supported_setting(enum v4l2_setting setting);
+bool is_supported_format(enum v4l2_image_format format);
+bool is_supported_model(enum v4l2_model model);
+bool is_supported_channel(enum v4l2_channel channel);
+int open_video_device(const char *device);
+int close_video_device(int fd);
 
 #endif
 

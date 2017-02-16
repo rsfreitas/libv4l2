@@ -62,24 +62,40 @@
  */
 #define __PUB_API__
 
-#define MEMSET(x)           memset(&(x), 0, sizeof(s))
+#define MEMSET(x)               memset(&(x), 0, sizeof(x))
+#define DEFAULT_MAX_CTRL_RANGE  255
+#define V4L2_NTSC_STANDARD      4096
 
 struct v4l2_image_s {
-    unsigned char   *data;
-    unsigned int    data_size;
-    struct cref_s   ref;
+    unsigned char           *data;
+    unsigned int            data_size;
+    int                     width;
+    int                     height;
+    enum v4l2_image_format  format;
+    struct cref_s           ref;
+};
+
+struct v4l2_buffer_s {
+    void                    *start;
+    size_t                  length;
 };
 
 struct v4l2_s {
-    enum v4l2_model model;
-    char            *device;
-    int             fd;
-    char            card[32];
-    char            bus_info[32];
-    char            driver[16];
-    int             max_ctrl_range;
-    uint32_t        capabilities;
-    struct cref_s   ref;
+    enum v4l2_model         model;
+    bool                    device_initialized;
+    bool                    mmap_initialized;
+    char                    *device;
+    int                     fd;
+    char                    *card;
+    char                    *bus_info;
+    char                    *driver;
+    int                     max_ctrl_range;
+    uint32_t                capabilities;
+    uint32_t                version;
+    int                     number_of_buffers;
+    struct v4l2_buffer_s    *buffers;
+    struct v4l2_image_s     current_image;
+    struct cref_s           ref;
 };
 
 #include "v_utils.h"

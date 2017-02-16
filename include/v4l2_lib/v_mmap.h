@@ -20,7 +20,6 @@
 
 int mmap_init(struct v4l2_s *v4l2);
 int mmap_uninit(struct v4l2_s *v4l2);
-int mmap_start(struct v4l2_s *v4l2);
 
 #endif
 

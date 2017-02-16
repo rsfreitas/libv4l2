@@ -27,36 +27,11 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "libv4l2.h"
-
-static void destroy_v4l2(const struct cref_s *ref)
-{
-    struct v4l2_s *v = cl_container_of(ref, struct v4l2_s, ref);
-
-    if (NULL == v)
-        return;
-
-    free(v);
-}
-
-struct v4l2_s *new_v4l2_s(void)
-{
-    struct v4l2_s *v = NULL;
-
-    v = calloc(1, sizeof(struct v4l2_s));
-
-    if (NULL == v) {
-        errno_set(V4L2_ERROR_MALLOC);
-        return NULL;
-    }
-
-    /* Initialize reference count */
-    v->ref.count = 1;
-    v->ref.free = destroy_v4l2;
-
-    return v;
-}
 
 int _ioctl(int fd, int request, void *argp)
 {
@@ -69,7 +44,7 @@ int _ioctl(int fd, int request, void *argp)
     return r;
 }
 
-int v4l2_format_to_videodev2(enum v4l2_image_format format)
+int v4l2_format_to_videodev(enum v4l2_image_format format)
 {
     switch (format) {
         case V4L2_IMAGE_FMT_GRAY:
@@ -111,5 +86,85 @@ int v4l2_setting_to_videodev(enum v4l2_setting setting)
     }
 
     return -1;
+}
+
+bool is_supported_setting(enum v4l2_setting setting)
+{
+    switch (setting) {
+        case V4L2_SETTING_BRIGHTNESS:
+        case V4L2_SETTING_CONTRAST:
+        case V4L2_SETTING_SATURATION:
+        case V4L2_SETTING_HUE:
+            return true;
+
+        default:
+            break;
+    }
+
+    return false;
+}
+
+bool is_supported_format(enum v4l2_image_format format)
+{
+    switch (format) {
+        case V4L2_IMAGE_FMT_GRAY:
+        case V4L2_IMAGE_FMT_BGR24:
+        case V4L2_IMAGE_FMT_YUV420:
+        case V4L2_IMAGE_FMT_YUYV:
+            return true;
+
+        default:
+            break;
+    }
+
+    return false;
+}
+
+bool is_supported_model(enum v4l2_model model)
+{
+    switch (model) {
+        case V4L2_MODEL_BT878_CARD:
+        case V4L2_MODEL_USB_WEBCAM:
+        case V4L2_MODEL_RPI_CAMERA:
+            return true;
+
+        default:
+            break;
+    }
+
+    return false;
+}
+
+bool is_supported_channel(enum v4l2_channel channel)
+{
+    switch (channel) {
+        case V4L2_CHANNEL_TUNER:
+        case V4L2_CHANNEL_COMPOSITE:
+        case V4L2_CHANNEL_SVIDEO:
+            return true;
+
+        default:
+            break;
+    }
+
+    return false;
+}
+
+int open_video_device(const char *device)
+{
+    struct stat st;
+
+    if (stat(device, &st) == -1)
+        return -1;
+
+    if (!S_ISCHR(st.st_mode))
+        return -1;
+
+    return open(device, O_RDWR);
+}
+
+int close_video_device(int fd)
+{
+    return close(fd);
 }
 

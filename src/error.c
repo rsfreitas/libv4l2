@@ -26,21 +26,14 @@
 
 #include "libv4l2.h"
 
-#ifndef USE_LIBCOLLECTIONS
-# define tr_noop(String)    String
-#endif
-
 static const char *__description[] = {
-    tr_noop("Ok")
+    tr_noop("Ok"),
+    tr_noop("Error allocating memory internally"),
+    tr_noop("Invalid argument")
 };
 
 static const char *__unknown_error = tr_noop("Unknown error");
-
-#ifdef USE_LIBCOLLECTIONS
-# define __errno        (*cerrno_storage())
-#else
-static __thread int __errno;
-#endif
+#define __errno        (*cerrno_storage())
 
 void errno_clear(void)
 {

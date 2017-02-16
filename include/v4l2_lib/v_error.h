@@ -29,12 +29,15 @@
 
 #ifndef LIBV4L2_COMPILE
 # ifndef _LIBV4L2_H
-#  error "Never use <v_error.h.h> directly; include <libv4l2.h> instead."
+#  error "Never use <v_error.h> directly; include <libv4l2.h> instead."
 # endif
 #endif
 
 enum v4l2_error_code {
     V4L2_ERROR_NO_ERROR,
+
+    V4L2_ERROR_MALLOC,
+    V4L2_NULL_ARG,
 
     V4L2_ERROR_MAX_ERROR_CODE
 };

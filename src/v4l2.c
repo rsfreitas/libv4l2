@@ -26,12 +26,58 @@
 
 #include "libv4l2.h"
 
-__PUB_API__ void v4l2_open(void)
+static const int __desired_video_buffers = 4;
+
+__PUB_API__ v4l2_t *v4l2_ref(v4l2_t *v4l2)
 {
+    struct v4l2_s *v = (struct v4l2_s *)v4l2;
+
+    errno_clear();
+
+    if (NULL == v4l2) {
+        errno_set(V4L2_NULL_ARG);
+        return NULL;
+    }
+
+    cref_inc(&v->ref);
+
+    return v4l2;
 }
 
-__PUB_API__ void v4l2_close(void)
+__PUB_API__ int v4l2_unref(v4l2_t *v4l2)
 {
+    struct v4l2_s *v = (struct v4l2_s *)v4l2;
+
+    errno_clear();
+
+    if (NULL == v4l2) {
+        errno_set(V4L2_NULL_ARG);
+        return -1;
+    }
+
+    cref_dec(&v->ref);
+
+    return 0;
+}
+
+__PUB_API__ v4l2_t *v4l2_open(const char *device, int width, int height,
+    enum v4l2_image_format format, enum v4l2_model model)
+{
+    struct v4l2_s *v4l2 = NULL;
+
+    errno_clear();
+
+    if (NULL == device) {
+        errno_set(V4L2_NULL_ARG);
+        return NULL;
+    }
+
+    return v4l2;
+}
+
+__PUB_API__ int v4l2_close(v4l2_t *v4l2)
+{
+    return v4l2_unref(v4l2);
 }
 
 __PUB_API__ void v4l2_grab_image(void)

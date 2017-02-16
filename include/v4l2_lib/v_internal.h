@@ -27,6 +27,26 @@
 #ifndef _V_INTERNAL_H
 #define _V_INTERNAL_H          1
 
+#ifndef _STDINT_H
+# include <stdint.h>
+#endif
+
+#ifndef _STDBOOL_H
+# include <stdbool.h>
+#endif
+
+#ifndef __LINUX_VIDEODEV2_H
+# include <linux/videodev2.h>
+#endif
+
+#ifndef _PTHREAD_H
+# include <pthread.h>
+#endif
+
+#ifndef _STRING_H
+# include <string.h>
+#endif
+
 /*
  * An internal representation of a public function. It does not affect the code
  * or the function visibility. Its objective is only to let clear what is and
@@ -42,12 +62,32 @@
  */
 #define __PUB_API__
 
+#define MEMSET(x)           memset(&(x), 0, sizeof(s))
+
+struct v4l2_image_s {
+    unsigned char   *data;
+    unsigned int    data_size;
+    struct cref_s   ref;
+};
+
+struct v4l2_s {
+    enum v4l2_model model;
+    char            *device;
+    int             fd;
+    char            card[32];
+    char            bus_info[32];
+    char            driver[16];
+    int             max_ctrl_range;
+    uint32_t        capabilities;
+    struct cref_s   ref;
+};
+
+#include "v_utils.h"
+#include "v_mmap.h"
+
 /* error.c */
 void errno_clear(void);
 void errno_set(enum v4l2_error_code code);
-
-/* utils.c */
-int _ioctl(int fd, int request, void *argp);
 
 #endif
 

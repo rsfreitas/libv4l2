@@ -4,7 +4,6 @@
 CC = gcc
 AR = ar
 
-USE_LIBCOLLECTIONS = true
 gccversion = 4
 ARCH_TEST := $(shell uname -m)
 GCCVERSION_TEST := $(shell expr `gcc -dumpversion | cut -f1 -d.` \> 4)
@@ -39,15 +38,10 @@ CFLAGS = -Wall -Wextra -fPIC -ggdb -O0 -g3 \
         -DLIBV4L2_COMPILE -D_GNU_SOURCE $(INCLUDEDIR)
 
 LIBDIR =
-LIBS =
+LIBS = -lcollections -lpthread
 
 ifeq ($(gccversion), 5)
     CFLAGS += -fgnu89-inline
-endif
-
-ifeq ($(USE_LIBCOLLECTIONS), true)
-    CFLAGS += -DUSE_LIBCOLLECTIONS
-    LIBS += -lcollections
 endif
 
 VPATH = ../include:.
@@ -63,6 +57,8 @@ static: outputdirs $(OBJS)
 
 clean:
 	rm -rf $(OBJS) $(TARGET_SHARED) $(TARGET_STATIC) *~ ../include/*~
+
+purge: clean shared
 
 dest_clean:
 	rm -f $(USR_DIR)/$(LIBNAME)*

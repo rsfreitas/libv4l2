@@ -3,7 +3,7 @@
  * Description:
  *
  * Author: Rodrigo Freitas
- * Created at: Wed Feb 15 21:38:26 2017
+ * Created at: Thu Feb 16 13:46:33 2017
  * Project: libv4l2
  *
  * Copyright (c) 2017 All rights reserved
@@ -24,17 +24,25 @@
  * USA
  */
 
-#ifndef _LIBV4L2_V_MMAP_H
-#define _LIBV4L2_V_MMAP_H          1
+#ifndef _LIBV4L2_V_V4L2_H
+#define _LIBV4L2_V_V4L2_H          1
 
 #ifndef LIBV4L2_COMPILE
 # ifndef _LIBV4L2_H
-#  error "Never use <v_mmap.h> directly; include <libv4l2.h> instead."
+#  error "Never use <v_v4l2.h> directly; include <libv4l2.h> instead."
 # endif
 #endif
 
-int mmap_init(struct v4l2_s *v4l2);
-int mmap_uninit(struct v4l2_s *v4l2);
+v4l2_t *v4l2_ref(v4l2_t *v4l2);
+int v4l2_unref(v4l2_t *v4l2);
+v4l2_t *v4l2_open(const char *device, int width, int height,
+                  enum v4l2_image_format format, enum v4l2_model model,
+                  enum v4l2_channel channel);
+
+int v4l2_close(v4l2_t *v4l2);
+v4l2_image_t *v4l2_grab_image(v4l2_t *v4l2, bool dup);
+int v4l2_set_setting(v4l2_t *v4l2, enum v4l2_setting setting, int value);
+int v4l2_get_setting(v4l2_t *v4l2, enum v4l2_setting setting);
 
 #endif
 

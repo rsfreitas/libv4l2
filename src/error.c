@@ -52,7 +52,10 @@ static const char *__description[] = {
     tr_noop("Error selecting the video standard for current input"),
     tr_noop("Unsupported image format"),
     tr_noop("Unsupported card model"),
-    tr_noop("Unsupported input channel")
+    tr_noop("Unsupported input channel"),
+    tr_noop("Error creating image grabbing thread"),
+    tr_noop("Error while starting image grabbing thread"),
+    tr_noop("Grabbing thread inactive")
 };
 
 static const char *__unknown_error = tr_noop("Unknown error");

@@ -3,10 +3,10 @@
  * Description:
  *
  * Author: Rodrigo Freitas
- * Created at: Wed Feb 15 21:38:26 2017
+ * Created at: Thu Feb 16 16:15:34 2017
  * Project: libv4l2
  *
- * Copyright (c) 2017 All rights reserved
+ * Copyright (C) 2017 Rodrigo Freitas
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,17 +24,19 @@
  * USA
  */
 
-#ifndef _LIBV4L2_V_MMAP_H
-#define _LIBV4L2_V_MMAP_H          1
+#ifndef _LIBV4L2_V_INFO_H
+#define _LIBV4L2_V_INFO_H          1
 
 #ifndef LIBV4L2_COMPILE
 # ifndef _LIBV4L2_H
-#  error "Never use <v_mmap.h> directly; include <libv4l2.h> instead."
+#  error "Never use <v_info.h> directly; include <libv4l2.h> instead."
 # endif
 #endif
 
-int mmap_init(struct v4l2_s *v4l2);
-int mmap_uninit(struct v4l2_s *v4l2);
+const char *v4l2_device_name(const v4l2_t *v4l2);
+const char *v4l2_card_name(const v4l2_t *v4l2);
+const char *v4l2_driver_name(const v4l2_t *v4l2);
+const char *v4l2_bus_info(const v4l2_t *v4l2);
 
 #endif
 

@@ -82,10 +82,10 @@ struct v4l2_buffer_s {
 
 struct v4l2_s {
     enum v4l2_model         model;
+    enum v4l2_channel       channel;
     bool                    device_initialized;
     bool                    mmap_initialized;
     char                    *device;
-    int                     fd;
     char                    *card;
     char                    *bus_info;
     char                    *driver;
@@ -93,17 +93,26 @@ struct v4l2_s {
     uint32_t                capabilities;
     uint32_t                version;
     int                     number_of_buffers;
+    int                     fd;
     struct v4l2_buffer_s    *buffers;
     struct v4l2_image_s     current_image;
+
+    /* image grabbing */
+    pthread_mutex_t         grab_mutex;
+    pthread_cond_t          grab_cond;
+    cthread_t               *grab_thread;
+    bool                    have_new_frame;
+    bool                    thread_active;
+    int                     framecount;
+    int                     captured_buffer_index;
+
+    /* reference count */
     struct cref_s           ref;
 };
 
+#include "v_grab.h"
 #include "v_utils.h"
 #include "v_mmap.h"
-
-/* error.c */
-void errno_clear(void);
-void errno_set(enum v4l2_error_code code);
 
 #endif
 

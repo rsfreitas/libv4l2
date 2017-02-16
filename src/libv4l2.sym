@@ -1,7 +1,7 @@
 LIBV4L2_0.1 {
     global:
         v4l2_get_last_error;
-        v4l2_sterror;
+        v4l2_strerror;
         v4l2_ref;
         v4l2_unref;
         v4l2_open;
@@ -9,6 +9,17 @@ LIBV4L2_0.1 {
         v4l2_grab_image;
         v4l2_set_setting;
         v4l2_get_setting;
+        v4l2_image_ref;
+        v4l2_image_unref;
+        v4l2_image_size;
+        v4l2_image_width;
+        v4l2_image_height;
+        v4l2_image_format;
+        v4l2_image_data;
+        v4l2_device_name;
+        v4l2_card_name;
+        v4l2_driver_name;
+        v4l2_bus_info;
     local:
         *;
 };

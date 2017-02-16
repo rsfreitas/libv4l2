@@ -37,6 +37,8 @@ static void destroy_v4l2(const struct cref_s *ref)
     if (NULL == v)
         return;
 
+    grab_stop(v);
+
     if (v->mmap_initialized == true)
         mmap_uninit(v);
 
@@ -213,6 +215,7 @@ static int v4l2_set_input(struct v4l2_s *v4l2, enum v4l2_model model,
         }
     }
 
+    v4l2->channel = channel;
     v4l2->model = model;
 
     return 0;
@@ -302,11 +305,6 @@ static int v4l2_init_device(struct v4l2_s *v4l2, int width, int height,
     return 0;
 }
 
-static int v4l2_start_grab(struct v4l2_s *v4l2)
-{
-    return -1;
-}
-
 /*
  * API
  *
@@ -386,9 +384,8 @@ __PUB_API__ v4l2_t *v4l2_open(const char *device, int width, int height,
     if (v4l2_init_device(v4l2, width, height, format) < 0)
         goto error_block;
 
-    if (v4l2_start_grab(v4l2) < 0) {
+    if (grab_start(v4l2) < 0)
         goto error_block;
-    }
 
     return v4l2;
 
@@ -411,7 +408,7 @@ __PUB_API__ v4l2_image_t *v4l2_grab_image(v4l2_t *v4l2, bool dup)
         return NULL;
     }
 
-    return NULL;
+    return grab_image(v4l2, dup);
 }
 
 __PUB_API__ int v4l2_set_setting(v4l2_t *v4l2, enum v4l2_setting setting,

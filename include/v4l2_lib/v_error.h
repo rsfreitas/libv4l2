@@ -61,9 +61,17 @@ enum v4l2_error_code {
     V4L2_UNSUPPORTED_FORMAT,
     V4L2_UNSUPPORTED_MODEL,
     V4L2_UNSUPPORTED_CHANNEL,
+    V4L2_GRAB_THREAD_CREATION_ERROR,
+    V4L2_GRAB_THREAD_START_ERROR,
+    V4L2_INACTIVE_GRAB_THREAD,
 
     V4L2_ERROR_MAX_ERROR_CODE
 };
+
+#ifdef LIBV4L2_COMPILE
+void errno_clear(void);
+void errno_set(enum v4l2_error_code code);
+#endif
 
 enum v4l2_error_code v4l2_get_last_error(void);
 const char *v4l2_strerror(enum v4l2_error_code code);

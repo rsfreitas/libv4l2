@@ -80,6 +80,8 @@ typedef void                v4l2_image_t;
 #endif
 
 #include "v4l2_lib/v_image.h"
+#include "v4l2_lib/v_info.h"
+#include "v4l2_lib/v_v4l2.h"
 
 #endif
 

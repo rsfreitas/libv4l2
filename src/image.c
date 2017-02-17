@@ -169,7 +169,7 @@ __PUB_API__ enum v4l2_image_format v4l2_image_format(const v4l2_image_t *image)
     return fmt;
 }
 
-__PUB_API__ unsigned char *v4l2_image_data(const v4l2_image_t *image)
+__PUB_API__ const unsigned char *v4l2_image_data(const v4l2_image_t *image)
 {
     struct v4l2_image_s *i = v4l2_image_ref((v4l2_image_t *)image);
     unsigned char *ptr = NULL;

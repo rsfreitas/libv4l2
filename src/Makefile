@@ -70,7 +70,7 @@ install:
 
 install_headers:
 	$(shell [ ! -d /usr/local/include/v4l2_lib ] && mkdir -p /usr/local/include/v4l2_lib)
-	$(shell for f in `ls ../include/v4l2_lib/v_*.h | egrep -v 'v_internal.h'`; do cp -f $$f /usr/local/include/v4l2_lib; done)
+	$(shell for f in `ls ../include/v4l2_lib/v_*.h | egrep -v '^v_internal.h|^v_grab.h|^v_utils.h|^v_mmap.h'`; do cp -f $$f /usr/local/include/v4l2_lib; done)
 	cp -f ../include/libv4l2.h /usr/local/include
 
 dev_install: install_headers install

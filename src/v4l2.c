@@ -226,9 +226,6 @@ static int v4l2_stop_device(struct v4l2_s *v4l2)
     if (v4l2->device_initialized == false)
         return 0;
 
-    if (v4l2->current_image.data != NULL)
-        free(v4l2->current_image.data);
-
     return 0;
 }
 
@@ -292,13 +289,6 @@ static int v4l2_init_device(struct v4l2_s *v4l2, int width, int height,
     v4l2->current_image.height = fmt.fmt.pix.height;
     v4l2->current_image.format = format;
     v4l2->current_image.data_size = fmt.fmt.pix.sizeimage;
-
-    v4l2->current_image.data = calloc(1, v4l2->current_image.data_size);
-
-    if (NULL == v4l2->current_image.data) {
-        errno_set(V4L2_ERROR_MALLOC);
-        return -1;
-    }
 
     v4l2->device_initialized = true;
 
@@ -411,10 +401,10 @@ __PUB_API__ v4l2_image_t *v4l2_grab_image(v4l2_t *v4l2, bool dup)
     return grab_image(v4l2, dup);
 }
 
-__PUB_API__ int v4l2_set_setting(v4l2_t *v4l2, enum v4l2_setting setting,
+__PUB_API__ int v4l2_set_setting(const v4l2_t *v4l2, enum v4l2_setting setting,
     int value)
 {
-    struct v4l2_s *v = v4l2_ref(v4l2);
+    struct v4l2_s *v = v4l2_ref((v4l2_t *)v4l2);
     int ret = -1;
 
     errno_clear();
@@ -439,9 +429,9 @@ end_block:
     return ret;
 }
 
-__PUB_API__ int v4l2_get_setting(v4l2_t *v4l2, enum v4l2_setting setting)
+__PUB_API__ int v4l2_get_setting(const v4l2_t *v4l2, enum v4l2_setting setting)
 {
-    struct v4l2_s *v = v4l2_ref(v4l2);
+    struct v4l2_s *v = v4l2_ref((v4l2_t *)v4l2);
     int value = -1;
 
     errno_clear();

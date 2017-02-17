@@ -33,9 +33,44 @@
 # endif
 #endif
 
+/**
+ * @name v4l2_device_name
+ * @brief Gets the device name handled in the v4l2_t object.
+ *
+ * @param [in] v4l2: The v4l2_t object.
+ *
+ * @return On success returns the device name or NULL otherwise.
+ */
 const char *v4l2_device_name(const v4l2_t *v4l2);
+
+/**
+ * @name v4l2_card_name
+ * @brief Gets the card name from the v4l2_t object.
+ *
+ * @param [in] v4l2: The v4l2_t object.
+ *
+ * @return On success returns the card name or NULL otherwise.
+ */
 const char *v4l2_card_name(const v4l2_t *v4l2);
+
+/**
+ * @name v4l2_driver_name
+ * @brief Gets the driver name from the v4l2_t object.
+ *
+ * @param [in] v4l2: The v4l2_t object.
+ *
+ * @return On success returns the driver name or NULL otherwise.
+ */
 const char *v4l2_driver_name(const v4l2_t *v4l2);
+
+/**
+ * @name v4l2_bus_info
+ * @brief Gets the bus info from the v4l2_t object.
+ *
+ * @param [in] v4l2: The v4l2_t object.
+ *
+ * @return On success returns the bus info or NULL otherwise.
+ */
 const char *v4l2_bus_info(const v4l2_t *v4l2);
 
 #endif

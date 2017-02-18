@@ -27,8 +27,6 @@
 #ifndef _LIBV4L2_H
 #define _LIBV4L2_H          1
 
-#include <collections.h>
-
 /** Settings */
 enum v4l2_setting {
     V4L2_SETTING_UNKNOWN,
@@ -69,8 +67,6 @@ typedef void                v4l2_t;
 /** Captured image object */
 typedef void                v4l2_image_t;
 
-#include "v4l2_lib/v_error.h"
-
 #ifdef LIBV4L2_COMPILE
 # define MAJOR_VERSION      0
 # define MINOR_VERSION      1
@@ -79,6 +75,7 @@ typedef void                v4l2_image_t;
 # include "v4l2_lib/v_internal.h"
 #endif
 
+#include "v4l2_lib/v_error.h"
 #include "v4l2_lib/v_image.h"
 #include "v4l2_lib/v_info.h"
 #include "v4l2_lib/v_v4l2.h"

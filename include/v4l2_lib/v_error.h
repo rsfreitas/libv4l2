@@ -73,7 +73,22 @@ void errno_clear(void);
 void errno_set(enum v4l2_error_code code);
 #endif
 
+/**
+ * @name v4l2_get_last_error
+ * @brief Gets the last error code.
+ *
+ * @return Returns the last error code.
+ */
 enum v4l2_error_code v4l2_get_last_error(void);
+
+/**
+ * @name v4l2_strerror
+ * @brief Gets a descriptive text message about an error code.
+ *
+ * @param [in] code: The error code.
+ *
+ * @return Returns a descriptive text message about the error.
+ */
 const char *v4l2_strerror(enum v4l2_error_code code);
 
 #endif

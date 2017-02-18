@@ -296,6 +296,7 @@ static int v4l2_init_device(struct v4l2_s *v4l2, int width, int height,
 }
 
 /*
+ *
  * API
  *
  */

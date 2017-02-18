@@ -24,8 +24,8 @@
  * USA
  */
 
-#ifndef _V_INTERNAL_H
-#define _V_INTERNAL_H          1
+#ifndef _LIBV4L2_V_INTERNAL_H
+#define _LIBV4L2_V_INTERNAL_H          1
 
 #ifndef _STDINT_H
 # include <stdint.h>
@@ -45,6 +45,10 @@
 
 #ifndef _STRING_H
 # include <string.h>
+#endif
+
+#ifndef _COLLECTIONS_H
+# include <collections.h>
 #endif
 
 /*

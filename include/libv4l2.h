@@ -27,6 +27,10 @@
 #ifndef _LIBV4L2_H
 #define _LIBV4L2_H          1
 
+#ifndef _STDBOOL_H
+# include <stdbool.h>
+#endif
+
 /** Settings */
 enum v4l2_setting {
     V4L2_SETTING_UNKNOWN,

@@ -69,11 +69,15 @@ int main(int argc, char **argv)
                 v4l2_card_name(v4l2), v4l2_driver_name(v4l2),
                 v4l2_bus_info(v4l2));
 
-        for (i = 0; i < 10; i++) {
+        v4l2_set_setting(v4l2, V4L2_SETTING_BRIGHTNESS, 127);
+        v4l2_set_setting(v4l2, V4L2_SETTING_CONTRAST, 127);
+
+        for (i = 0; i < 1; i++) {
             img = v4l2_grab_image(v4l2, true);
             printf("Grab %d: %dx%d, %d bytes\n", i + 1, v4l2_image_width(img),
                     v4l2_image_height(img), v4l2_image_size(img));
 
+            cfsave("teste.raw", v4l2_image_data(img), v4l2_image_size(img));
             v4l2_image_unref(img);
             printf("Release\n");
         }

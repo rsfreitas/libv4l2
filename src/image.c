@@ -35,7 +35,7 @@ static void destroy_v4l2_image_s(const struct cref_s *ref)
     if (NULL == i)
         return;
 
-    if (i->data != NULL)
+    if ((i->data != NULL) && i->free_data)
         free(i->data);
 
     free(i);
@@ -57,6 +57,7 @@ struct v4l2_image_s *new_v4l2_image_s(enum v4l2_image_format format,
     i->height = height;
     i->format = format;
     i->data = NULL;
+    i->free_data = false;
 
     /* Initialize reference count */
     i->ref.count = 1;

@@ -69,8 +69,13 @@ int main(int argc, char **argv)
                 v4l2_card_name(v4l2), v4l2_driver_name(v4l2),
                 v4l2_bus_info(v4l2));
 
-        v4l2_set_setting(v4l2, V4L2_SETTING_BRIGHTNESS, 127);
-        v4l2_set_setting(v4l2, V4L2_SETTING_CONTRAST, 127);
+        sleep(1);
+        v4l2_set_setting(v4l2, V4L2_SETTING_BRIGHTNESS, 135);
+        v4l2_set_setting(v4l2, V4L2_SETTING_CONTRAST, 33);
+
+        v4l2_set_setting(v4l2, V4L2_SETTING_HUE, 0);
+        v4l2_set_setting(v4l2, V4L2_SETTING_SATURATION, 40);
+        sleep(1);
 
         for (i = 0; i < 1; i++) {
             img = v4l2_grab_image(v4l2, true);

@@ -72,6 +72,7 @@
 
 struct v4l2_image_s {
     unsigned char           *data;
+    bool                    free_data;
     unsigned int            data_size;
     int                     width;
     int                     height;

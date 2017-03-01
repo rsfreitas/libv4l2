@@ -31,13 +31,24 @@
 #include <libv4l2.h>
 #include <collections.h>
 
+static void usage(void)
+{
+    printf("Usage: v4l2 [OPTIONS]\n");
+    printf("An example showing how to use libv4l2's API.\n");
+    printf("\nOptions:\n");
+    printf("-h\t\tShows this help screen.\n");
+    printf("-d [device]\tIndicates the video device to be manipulated.\n");
+    printf("-g [frames]\tDefines the number of captures that will be made.\n");
+    printf("\n");
+}
+
 int main(int argc, char **argv)
 {
-    const char *opt = "d:\0";
+    const char *opt = "d:g:h\0";
     v4l2_t *v4l2 = NULL;
     v4l2_image_t *img;
-    int i, option;
-    char *device = NULL;
+    int i, option, grabs = -1;
+    char *device = NULL, *filename = NULL;
 
     do {
         option = getopt(argc, argv, opt);
@@ -45,6 +56,14 @@ int main(int argc, char **argv)
         switch (option) {
             case 'd':
                 device = strdup(optarg);
+                break;
+
+            case 'h':
+                usage();
+                return 1;
+
+            case 'g':
+                grabs = atoi(optarg);
                 break;
 
             case '?':
@@ -69,22 +88,22 @@ int main(int argc, char **argv)
                 v4l2_card_name(v4l2), v4l2_driver_name(v4l2),
                 v4l2_bus_info(v4l2));
 
-        sleep(1);
+        /* Sets the device settings */
         v4l2_set_setting(v4l2, V4L2_SETTING_BRIGHTNESS, 135);
         v4l2_set_setting(v4l2, V4L2_SETTING_CONTRAST, 33);
 
         v4l2_set_setting(v4l2, V4L2_SETTING_HUE, 0);
         v4l2_set_setting(v4l2, V4L2_SETTING_SATURATION, 40);
-        sleep(1);
 
-        for (i = 0; i < 1; i++) {
+        for (i = 0; i < grabs; i++) {
             img = v4l2_grab_image(v4l2, true);
             printf("Grab %d: %dx%d, %d bytes\n", i + 1, v4l2_image_width(img),
                     v4l2_image_height(img), v4l2_image_size(img));
 
-            cfsave("teste.raw", v4l2_image_data(img), v4l2_image_size(img));
+            asprintf(&filename, "test_%02d.raw", i + 1);
+            cfsave(filename, v4l2_image_data(img), v4l2_image_size(img));
             v4l2_image_unref(img);
-            printf("Release\n");
+            free(filename);
         }
 
         v4l2_close(v4l2);

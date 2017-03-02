@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         v4l2_set_setting(v4l2, V4L2_SETTING_SATURATION, 40);
 
         for (i = 0; i < grabs; i++) {
-            img = v4l2_grab_image(v4l2, true);
+            img = v4l2_grab_image(v4l2, false);
             printf("Grab %d: %dx%d, %d bytes\n", i + 1, v4l2_image_width(img),
                     v4l2_image_height(img), v4l2_image_size(img));
 

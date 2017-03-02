@@ -35,10 +35,13 @@ static void destroy_v4l2_image_s(const struct cref_s *ref)
     if (NULL == i)
         return;
 
-    if ((i->data != NULL) && i->free_data)
+    if ((i->data != NULL) && i->free_data) {
         free(i->data);
+        i->data = NULL;
+    }
 
     free(i);
+    i = NULL;
 }
 
 struct v4l2_image_s *new_v4l2_image_s(enum v4l2_image_format format,
@@ -183,6 +186,31 @@ __PUB_API__ const unsigned char *v4l2_image_data(const v4l2_image_t *image)
     }
 
     ptr = i->data;
+    v4l2_image_unref(i);
+
+    return ptr;
+}
+
+__PUB_API__ unsigned char *v4l2_image_data_export(const v4l2_image_t *image)
+{
+    struct v4l2_image_s *i = v4l2_image_ref((v4l2_image_t *)image);
+    unsigned char *ptr = NULL;
+
+    errno_clear();
+
+    if (NULL == image) {
+        errno_set(V4L2_NULL_ARG);
+        return NULL;
+    }
+
+    ptr = i->data;
+
+    /*
+     * Set ourselves that we don't need to release this after calling this
+     * function. It is user responsability to do that.
+     */
+    i->free_data = false;
+
     v4l2_image_unref(i);
 
     return ptr;

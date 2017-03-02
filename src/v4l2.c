@@ -62,6 +62,7 @@ static void destroy_v4l2(const struct cref_s *ref)
         close_video_device(v->fd);
 
     free(v);
+    v = NULL;
 }
 
 static struct v4l2_s *new_v4l2_s(void)

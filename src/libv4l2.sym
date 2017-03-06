@@ -16,6 +16,7 @@ LIBV4L2_0.1 {
         v4l2_image_height;
         v4l2_image_format;
         v4l2_image_data;
+        v4l2_image_data_export;
         v4l2_device_name;
         v4l2_card_name;
         v4l2_driver_name;

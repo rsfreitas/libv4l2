@@ -4,7 +4,7 @@ TARGET = v4l2
 
 INCLUDEDIR = -I../include
 INCLUDEDIR += -I/usr/local/include
-CFLAGS = -Wall -Wextra -ggdb -O0 -fgnu89-inline $(INCLUDEDIR)
+CFLAGS = -Wall -Wextra -ggdb -O0 -D_GNU_SOURCE -fgnu89-inline $(INCLUDEDIR)
 
 LIBS = -lv4l2 -lcollections
 

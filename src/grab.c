@@ -159,6 +159,7 @@ struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup)
         goto end_block;
 
     if (dup == true) {
+        img->free_data = true;
         img->data = cmemdup(v4l2->buffers[v4l2->captured_buffer_index].start,
                             v4l2->current_image.data_size);
     } else

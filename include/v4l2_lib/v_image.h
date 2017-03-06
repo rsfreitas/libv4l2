@@ -112,5 +112,16 @@ enum v4l2_image_format v4l2_image_format(const v4l2_image_t *image);
  */
 const unsigned char *v4l2_image_data(const v4l2_image_t *image);
 
+/**
+ * @name v4l2_image_data_export
+ * @brief Retrieves the image content ownership.
+ *
+ * @param [in] image: The v4l2_image_t object.
+ *
+ * @return On success returns a pointer to the image content, and the user is
+ *         responsible for releasing it, or NULL otherwise.
+ */
+unsigned char *v4l2_image_data_export(const v4l2_image_t *image);
+
 #endif
 

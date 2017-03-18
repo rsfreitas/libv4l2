@@ -77,7 +77,7 @@ struct v4l2_image_s {
     int                     width;
     int                     height;
     enum v4l2_image_format  format;
-    struct cref_s           ref;
+    struct cl_ref_s         ref;
 };
 
 struct v4l2_buffer_s {
@@ -105,14 +105,14 @@ struct v4l2_s {
     /* image grabbing */
     pthread_mutex_t         grab_mutex;
     pthread_cond_t          grab_cond;
-    cthread_t               *grab_thread;
+    cl_thread_t             *grab_thread;
     bool                    have_new_frame;
     bool                    thread_active;
     int                     framecount;
     int                     captured_buffer_index;
 
     /* reference count */
-    struct cref_s           ref;
+    struct cl_ref_s         ref;
 };
 
 #include "v_grab.h"

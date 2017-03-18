@@ -27,39 +27,39 @@
 #include "libv4l2.h"
 
 static const char *__description[] = {
-    tr_noop("Ok"),
-    tr_noop("Error allocating memory internally"),
-    tr_noop("Invalid argument"),
-    tr_noop("Error setting value into the card"),
-    tr_noop("Error getting value from the card"),
-    tr_noop("Unsupported card setting"),
-    tr_noop("Unsupported memory mapping"),
-    tr_noop("Insufficiente number of internal buffers"),
-    tr_noop("Unable to query buffer status"),
-    tr_noop("Memory mapping failed"),
-    tr_noop("Memory unmapping failed"),
-    tr_noop("Unable to exchange a buffer with the driver"),
-    tr_noop("Error starting I/O streaming"),
-    tr_noop("Unable to query device capabilities"),
-    tr_noop("The device does not support single planar API"),
-    tr_noop("The device does not support I/O streaming"),
-    tr_noop("Failed to open device"),
-    tr_noop("Error setting the data format"),
-    tr_noop("Error getting the data format"),
-    tr_noop("Unable to query controls"),
-    tr_noop("Unable to query current video input"),
-    tr_noop("Unable to set the video input"),
-    tr_noop("Error selecting the video standard for current input"),
-    tr_noop("Unsupported image format"),
-    tr_noop("Unsupported card model"),
-    tr_noop("Unsupported input channel"),
-    tr_noop("Error creating image grabbing thread"),
-    tr_noop("Error while starting image grabbing thread"),
-    tr_noop("Grabbing thread inactive")
+    cl_tr_noop("Ok"),
+    cl_tr_noop("Error allocating memory internally"),
+    cl_tr_noop("Invalid argument"),
+    cl_tr_noop("Error setting value into the card"),
+    cl_tr_noop("Error getting value from the card"),
+    cl_tr_noop("Unsupported card setting"),
+    cl_tr_noop("Unsupported memory mapping"),
+    cl_tr_noop("Insufficiente number of internal buffers"),
+    cl_tr_noop("Unable to query buffer status"),
+    cl_tr_noop("Memory mapping failed"),
+    cl_tr_noop("Memory unmapping failed"),
+    cl_tr_noop("Unable to exchange a buffer with the driver"),
+    cl_tr_noop("Error starting I/O streaming"),
+    cl_tr_noop("Unable to query device capabilities"),
+    cl_tr_noop("The device does not support single planar API"),
+    cl_tr_noop("The device does not support I/O streaming"),
+    cl_tr_noop("Failed to open device"),
+    cl_tr_noop("Error setting the data format"),
+    cl_tr_noop("Error getting the data format"),
+    cl_tr_noop("Unable to query controls"),
+    cl_tr_noop("Unable to query current video input"),
+    cl_tr_noop("Unable to set the video input"),
+    cl_tr_noop("Error selecting the video standard for current input"),
+    cl_tr_noop("Unsupported image format"),
+    cl_tr_noop("Unsupported card model"),
+    cl_tr_noop("Unsupported input channel"),
+    cl_tr_noop("Error creating image grabbing thread"),
+    cl_tr_noop("Error while starting image grabbing thread"),
+    cl_tr_noop("Grabbing thread inactive")
 };
 
-static const char *__unknown_error = tr_noop("Unknown error");
-#define __errno        (*cerrno_storage())
+static const char *__unknown_error = cl_tr_noop("Unknown error");
+#define __errno        (*cl_errno_storage())
 
 void errno_clear(void)
 {

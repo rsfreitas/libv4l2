@@ -30,7 +30,7 @@
 
 static int v4l2_stop_device(struct v4l2_s *v4l2);
 
-static void destroy_v4l2(const struct cref_s *ref)
+static void destroy_v4l2(const struct cl_ref_s *ref)
 {
     struct v4l2_s *v = cl_container_of(ref, struct v4l2_s, ref);
 
@@ -313,7 +313,7 @@ __PUB_API__ v4l2_t *v4l2_ref(v4l2_t *v4l2)
         return NULL;
     }
 
-    cref_inc(&v->ref);
+    cl_ref_inc(&v->ref);
 
     return v4l2;
 }
@@ -329,7 +329,7 @@ __PUB_API__ int v4l2_unref(v4l2_t *v4l2)
         return -1;
     }
 
-    cref_dec(&v->ref);
+    cl_ref_dec(&v->ref);
 
     return 0;
 }

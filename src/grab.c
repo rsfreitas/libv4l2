@@ -50,18 +50,18 @@ static int select_frame_data(struct v4l2_s *v4l2)
     return 0;
 }
 
-static void *grab_thread(cthread_t *arg)
+static void *grab_thread(cl_thread_t *arg)
 {
-    struct v4l2_s *v4l2 = cthread_get_user_data(arg);
+    struct v4l2_s *v4l2 = cl_thread_get_user_data(arg);
     struct v4l2_buffer buf;
     int ret;
 
-    cthread_set_state(arg, CL_THREAD_ST_CREATED);
+    cl_thread_set_state(arg, CL_THREAD_ST_CREATED);
     v4l2->captured_buffer_index = 0;
-    cthread_set_state(arg, CL_THREAD_ST_INITIALIZED);
+    cl_thread_set_state(arg, CL_THREAD_ST_INITIALIZED);
 
     while (v4l2->thread_active) {
-        cmsleep(1);
+        cl_msleep(1);
         ret = select_frame_data(v4l2);
 
         if (ret == -2)
@@ -110,7 +110,7 @@ int grab_start(struct v4l2_s *v4l2)
     pthread_mutex_init(&v4l2->grab_mutex, NULL);
     pthread_cond_init(&v4l2->grab_cond, NULL);
 
-    v4l2->grab_thread = cthread_create(CL_THREAD_JOINABLE, grab_thread, v4l2);
+    v4l2->grab_thread = cl_thread_spawn(CL_THREAD_JOINABLE, grab_thread, v4l2);
 
     if (NULL == v4l2->grab_thread) {
         v4l2->thread_active = false;
@@ -118,7 +118,7 @@ int grab_start(struct v4l2_s *v4l2)
         return -1;
     }
 
-    if (cthread_wait_startup(v4l2->grab_thread) != 0) {
+    if (cl_thread_wait_startup(v4l2->grab_thread) != 0) {
         v4l2->thread_active = false;
         errno_set(V4L2_GRAB_THREAD_START_ERROR);
         return -1;
@@ -133,7 +133,7 @@ void grab_stop(struct v4l2_s *v4l2)
         return;
 
     v4l2->thread_active = false;
-    cthread_destroy(v4l2->grab_thread);
+    cl_thread_destroy(v4l2->grab_thread);
 }
 
 struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup)
@@ -160,8 +160,8 @@ struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup)
 
     if (dup == true) {
         img->free_data = true;
-        img->data = cmemdup(v4l2->buffers[v4l2->captured_buffer_index].start,
-                            v4l2->current_image.data_size);
+        img->data = cl_memdup(v4l2->buffers[v4l2->captured_buffer_index].start,
+                              v4l2->current_image.data_size);
     } else
         img->data = v4l2->buffers[v4l2->captured_buffer_index].start;
 

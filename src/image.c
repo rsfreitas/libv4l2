@@ -28,7 +28,7 @@
 
 #include "libv4l2.h"
 
-static void destroy_v4l2_image_s(const struct cref_s *ref)
+static void destroy_v4l2_image_s(const struct cl_ref_s *ref)
 {
     struct v4l2_image_s *i = cl_container_of(ref, struct v4l2_image_s, ref);
 
@@ -80,7 +80,7 @@ __PUB_API__ v4l2_image_t *v4l2_image_ref(v4l2_image_t *image)
         return NULL;
     }
 
-    cref_inc(&i->ref);
+    cl_ref_inc(&i->ref);
 
     return image;
 }
@@ -96,7 +96,7 @@ __PUB_API__ int v4l2_image_unref(v4l2_image_t *image)
         return -1;
     }
 
-    cref_dec(&i->ref);
+    cl_ref_dec(&i->ref);
 
     return 0;
 }

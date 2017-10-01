@@ -28,64 +28,6 @@
 
 #include "libv4l2.h"
 
-static int v4l2_stop_device(struct v4l2_s *v4l2);
-
-static void destroy_v4l2(const struct cl_ref_s *ref)
-{
-    struct v4l2_s *v = cl_container_of(ref, struct v4l2_s, ref);
-
-    if (NULL == v)
-        return;
-
-    grab_stop(v);
-
-    if (v->mmap_initialized == true)
-        mmap_uninit(v);
-
-    /* uninit device */
-    if (v->device_initialized == true)
-        v4l2_stop_device(v);
-
-    if (v->device != NULL)
-        free(v->device);
-
-    if (v->card != NULL)
-        free(v->card);
-
-    if (v->bus_info != NULL)
-        free(v->bus_info);
-
-    if (v->driver != NULL)
-        free(v->driver);
-
-    if (v->fd != -1)
-        close_video_device(v->fd);
-
-    free(v);
-    v = NULL;
-}
-
-static struct v4l2_s *new_v4l2_s(void)
-{
-    struct v4l2_s *v = NULL;
-
-    v = calloc(1, sizeof(struct v4l2_s));
-
-    if (NULL == v) {
-        errno_set(V4L2_ERROR_MALLOC);
-        return NULL;
-    }
-
-    v->fd = -1;
-    v->device_initialized = false;
-
-    /* Initialize reference count */
-    v->ref.count = 1;
-    v->ref.free = destroy_v4l2;
-
-    return v;
-}
-
 static int v4l2_get_control(struct v4l2_s *v4l2, enum v4l2_setting setting)
 {
     struct v4l2_control control;
@@ -121,42 +63,6 @@ static int v4l2_set_control(struct v4l2_s *v4l2, enum v4l2_setting setting,
         errno_set(V4L2_ERROR_SETTING_VALUE);
         return -1;
     }
-
-    return 0;
-}
-
-static int v4l2_open_device(struct v4l2_s *v4l2, const char *device)
-{
-    struct v4l2_capability cap;
-
-    v4l2->fd = open_video_device(device);
-
-    if (v4l2->fd < 0) {
-        errno_set(V4L2_OPEN_FAILED);
-        return -1;
-    }
-
-    if (_ioctl(v4l2->fd, VIDIOC_QUERYCAP, &cap) == -1) {
-        errno_set(V4L2_QUERYCAP_ERROR);
-        return -1;
-    }
-
-    if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
-        errno_set(V4L2_NO_CAP_VIDEO_CAPTURE);
-        return -1;
-    }
-
-    if (!(cap.capabilities & V4L2_CAP_STREAMING)) {
-        errno_set(V4L2_NO_CAP_STREAMING);
-        return -1;
-    }
-
-    v4l2->capabilities = cap.capabilities;
-    v4l2->version = cap.version;
-    v4l2->device = strdup(device);
-    v4l2->card = strdup((const char *)cap.card);
-    v4l2->driver = strdup((const char *)cap.driver);
-    v4l2->bus_info = strdup((const char *)cap.bus_info);
 
     return 0;
 }
@@ -218,14 +124,6 @@ static int v4l2_set_input(struct v4l2_s *v4l2, enum v4l2_model model,
 
     v4l2->channel = channel;
     v4l2->model = model;
-
-    return 0;
-}
-
-static int v4l2_stop_device(struct v4l2_s *v4l2)
-{
-    if (v4l2->device_initialized == false)
-        return 0;
 
     return 0;
 }
@@ -367,7 +265,7 @@ __PUB_API__ v4l2_t *v4l2_open(const char *device, int width, int height,
     if (NULL == v4l2)
         return NULL;
 
-    if (v4l2_open_device(v4l2, device) < 0)
+    if (v4l2_open_device(v4l2, device, false) < 0)
         goto error_block;
 
     if (v4l2_set_input(v4l2, model, channel) < 0)

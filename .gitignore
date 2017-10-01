@@ -31,3 +31,9 @@
 # Debug files
 *.dSYM/
 *.su
+
+# RAW images
+*.raw
+
+# Binary example
+example/v4l2

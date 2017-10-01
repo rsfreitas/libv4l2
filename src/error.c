@@ -55,7 +55,8 @@ static const char *__description[] = {
     cl_tr_noop("Unsupported input channel"),
     cl_tr_noop("Error creating image grabbing thread"),
     cl_tr_noop("Error while starting image grabbing thread"),
-    cl_tr_noop("Grabbing thread inactive")
+    cl_tr_noop("Grabbing thread inactive"),
+    cl_tr_noop("Error setting streaming parameters")
 };
 
 static const char *__unknown_error = cl_tr_noop("Unknown error");

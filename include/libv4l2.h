@@ -82,6 +82,7 @@ typedef void                v4l2_image_t;
 #include "v4l2_lib/v_error.h"
 #include "v4l2_lib/v_image.h"
 #include "v4l2_lib/v_info.h"
+#include "v4l2_lib/v_loopback.h"
 #include "v4l2_lib/v_v4l2.h"
 
 #endif

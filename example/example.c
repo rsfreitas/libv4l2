@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <libv4l2.h>
 #include <collections.h>
@@ -39,16 +40,17 @@ static void usage(void)
     printf("-h\t\tShows this help screen.\n");
     printf("-d [device]\tIndicates the video device to be manipulated.\n");
     printf("-g [frames]\tDefines the number of captures that will be made.\n");
+    printf("-l [device]\tThe loopback device to write captured frames.\n");
     printf("\n");
 }
 
 int main(int argc, char **argv)
 {
-    const char *opt = "d:g:h\0";
-    v4l2_t *v4l2 = NULL;
+    const char *opt = "d:g:hl:\0";
+    v4l2_t *v4l2 = NULL, *l_v4l2 = NULL;
     v4l2_image_t *img;
     int i, option, grabs = -1;
-    char *device = NULL, *filename = NULL;
+    char *device = NULL, *filename = NULL, *loopback = NULL;
 
     do {
         option = getopt(argc, argv, opt);
@@ -66,6 +68,10 @@ int main(int argc, char **argv)
                 grabs = atoi(optarg);
                 break;
 
+            case 'l':
+                loopback = strdup(optarg);
+                break;
+
             case '?':
                 return -1;
         }
@@ -76,44 +82,68 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    collections_init(NULL);
+    cl_init(NULL);
     v4l2 = v4l2_open(device, 640, 480, V4L2_IMAGE_FMT_YUYV,
                      V4L2_MODEL_USB_WEBCAM, V4L2_CHANNEL_COMPOSITE);
 
-    if (NULL == v4l2)
-        printf("%s\n", v4l2_strerror(v4l2_get_last_error()));
+    if (NULL == v4l2) {
+        printf("Error (1): %s\n", v4l2_strerror(v4l2_get_last_error()));
+        goto end_block;
+    }
 
-    if (v4l2 != NULL) {
-        printf("%s, %s, %s, %s\n", v4l2_device_name(v4l2),
-                v4l2_card_name(v4l2), v4l2_driver_name(v4l2),
-                v4l2_bus_info(v4l2));
+    printf("%s, %s, %s, %s\n", v4l2_device_name(v4l2),
+            v4l2_card_name(v4l2), v4l2_driver_name(v4l2),
+            v4l2_bus_info(v4l2));
 
-        /* Sets the device settings */
-        v4l2_set_setting(v4l2, V4L2_SETTING_BRIGHTNESS, 135);
-        v4l2_set_setting(v4l2, V4L2_SETTING_CONTRAST, 33);
+    if (loopback != NULL) {
+        l_v4l2 = v4l2_loopback_open(loopback, v4l2);
 
-        v4l2_set_setting(v4l2, V4L2_SETTING_HUE, 0);
-        v4l2_set_setting(v4l2, V4L2_SETTING_SATURATION, 40);
+        if (NULL == l_v4l2) {
+            printf("Error (2): %s\n", v4l2_strerror(v4l2_get_last_error()));
+            goto end_block;
+        }
+    }
 
+    /* Sets the device settings */
+    v4l2_set_setting(v4l2, V4L2_SETTING_BRIGHTNESS, 135);
+    v4l2_set_setting(v4l2, V4L2_SETTING_CONTRAST, 33);
+
+    v4l2_set_setting(v4l2, V4L2_SETTING_HUE, 0);
+    v4l2_set_setting(v4l2, V4L2_SETTING_SATURATION, 40);
+
+    if (loopback != NULL) {
+        while (1) {
+            img = v4l2_grab_image(v4l2, false);
+            v4l2_loopback_write_frame(l_v4l2, img);
+            printf("frame written\n");
+            v4l2_image_unref(img);
+        }
+
+        v4l2_close(l_v4l2);
+    } else {
         for (i = 0; i < grabs; i++) {
             img = v4l2_grab_image(v4l2, false);
             printf("Grab %d: %dx%d, %d bytes\n", i + 1, v4l2_image_width(img),
                     v4l2_image_height(img), v4l2_image_size(img));
 
             asprintf(&filename, "test_%02d.raw", i + 1);
-            cfsave(filename, v4l2_image_data(img), v4l2_image_size(img));
+            cl_fsave(filename, v4l2_image_data(img), v4l2_image_size(img));
             v4l2_image_unref(img);
             free(filename);
         }
-
-        v4l2_close(v4l2);
     }
 
+    v4l2_close(v4l2);
+
+end_block:
     if (device != NULL)
         free(device);
 
-    collections_uninit();
-    cexit();
+    if (loopback != NULL)
+        free(loopback);
+
+    cl_uninit();
+    cl_exit();
 
     return 0;
 }

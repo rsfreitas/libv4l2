@@ -69,6 +69,7 @@
 #define MEMSET(x)               memset(&(x), 0, sizeof(x))
 #define DEFAULT_MAX_CTRL_RANGE  255
 #define V4L2_NTSC_STANDARD      4096
+#define DEFAULT_LOOPBACK_FPS    30
 
 struct v4l2_image_s {
     unsigned char           *data;

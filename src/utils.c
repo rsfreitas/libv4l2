@@ -135,6 +135,7 @@ bool is_supported_model(enum v4l2_model model)
     return false;
 }
 
+/** Unused function */
 bool is_supported_channel(enum v4l2_channel channel)
 {
     switch (channel) {
@@ -150,7 +151,7 @@ bool is_supported_channel(enum v4l2_channel channel)
     return false;
 }
 
-int open_video_device(const char *device)
+static int open_video_device(const char *device)
 {
     struct stat st;
 
@@ -160,11 +161,113 @@ int open_video_device(const char *device)
     if (!S_ISCHR(st.st_mode))
         return -1;
 
-    return open(device, O_RDWR);
+    return open(device, O_RDWR | O_NONBLOCK);
 }
 
 int close_video_device(int fd)
 {
     return close(fd);
+}
+
+int v4l2_open_device(struct v4l2_s *v4l2, const char *device, bool loopback)
+{
+    struct v4l2_capability cap;
+
+    v4l2->fd = open_video_device(device);
+
+    if (v4l2->fd < 0) {
+        errno_set(V4L2_OPEN_FAILED);
+        return -1;
+    }
+
+    if (loopback == false) {
+        if (_ioctl(v4l2->fd, VIDIOC_QUERYCAP, &cap) == -1) {
+            errno_set(V4L2_QUERYCAP_ERROR);
+            return -1;
+        }
+
+        if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
+            errno_set(V4L2_NO_CAP_VIDEO_CAPTURE);
+            return -1;
+        }
+
+        if (!(cap.capabilities & V4L2_CAP_STREAMING)) {
+            errno_set(V4L2_NO_CAP_STREAMING);
+            return -1;
+        }
+    }
+
+    v4l2->capabilities = cap.capabilities;
+    v4l2->version = cap.version;
+    v4l2->device = strdup(device);
+    v4l2->card = strdup((const char *)cap.card);
+    v4l2->driver = strdup((const char *)cap.driver);
+    v4l2->bus_info = strdup((const char *)cap.bus_info);
+
+    return 0;
+}
+
+static int v4l2_stop_device(struct v4l2_s *v4l2)
+{
+    if (v4l2->device_initialized == false)
+        return 0;
+
+    return 0;
+}
+
+static void destroy_v4l2(const struct cl_ref_s *ref)
+{
+    struct v4l2_s *v = cl_container_of(ref, struct v4l2_s, ref);
+
+    if (NULL == v)
+        return;
+
+    grab_stop(v);
+
+    if (v->mmap_initialized == true)
+        mmap_uninit(v);
+
+    /* uninit device */
+    if (v->device_initialized == true)
+        v4l2_stop_device(v);
+
+    if (v->device != NULL)
+        free(v->device);
+
+    if (v->card != NULL)
+        free(v->card);
+
+    if (v->bus_info != NULL)
+        free(v->bus_info);
+
+    if (v->driver != NULL)
+        free(v->driver);
+
+    if (v->fd != -1)
+        close_video_device(v->fd);
+
+    free(v);
+    v = NULL;
+}
+
+struct v4l2_s *new_v4l2_s(void)
+{
+    struct v4l2_s *v = NULL;
+
+    v = calloc(1, sizeof(struct v4l2_s));
+
+    if (NULL == v) {
+        errno_set(V4L2_ERROR_MALLOC);
+        return NULL;
+    }
+
+    v->fd = -1;
+    v->device_initialized = false;
+
+    /* Initialize reference count */
+    v->ref.count = 1;
+    v->ref.free = destroy_v4l2;
+
+    return v;
 }
 

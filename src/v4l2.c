@@ -40,11 +40,7 @@ static int v4l2_get_control(struct v4l2_s *v4l2, enum v4l2_setting setting)
         return -1;
     }
 
-    /*
-     * TODO: Use v4l2->max_ctrl_range to the value
-     */
-
-    return control.value;
+    return (control.value * DEFAULT_MAX_CTRL_RANGE) / v4l2->max_ctrl_range;
 }
 
 static int v4l2_set_control(struct v4l2_s *v4l2, enum v4l2_setting setting,
@@ -52,12 +48,8 @@ static int v4l2_set_control(struct v4l2_s *v4l2, enum v4l2_setting setting,
 {
     struct v4l2_control control;
 
-    /*
-     * TODO: Use v4l2->max_ctrl_range to the value
-     */
-
     control.id = v4l2_setting_to_videodev(setting);
-    control.value = value;
+    control.value = (v4l2->max_ctrl_range * value) / DEFAULT_MAX_CTRL_RANGE;
 
     if (_ioctl(v4l2->fd, VIDIOC_S_CTRL, &control) == -1) {
         errno_set(V4L2_ERROR_SETTING_VALUE);
@@ -237,6 +229,7 @@ __PUB_API__ v4l2_t *v4l2_open(const char *device, int width, int height,
     enum v4l2_channel channel)
 {
     struct v4l2_s *v4l2 = NULL;
+    int error;
 
     errno_clear();
 
@@ -280,7 +273,10 @@ __PUB_API__ v4l2_t *v4l2_open(const char *device, int width, int height,
     return v4l2;
 
 error_block:
+    error = v4l2_get_last_error();
     v4l2_unref(v4l2);
+    errno_set(error);
+
     return NULL;
 }
 
@@ -305,7 +301,7 @@ __PUB_API__ int v4l2_set_setting(const v4l2_t *v4l2, enum v4l2_setting setting,
     int value)
 {
     struct v4l2_s *v = v4l2_ref((v4l2_t *)v4l2);
-    int ret = -1;
+    int ret = -1, error;
 
     errno_clear();
 
@@ -319,12 +315,17 @@ __PUB_API__ int v4l2_set_setting(const v4l2_t *v4l2, enum v4l2_setting setting,
         goto end_block;
     }
 
-    /* TODO: validate value */
+    if (is_setting_value_valid(value) == false) {
+        errno_set(V4L2_INVALID_VALUE);
+        goto end_block;
+    }
 
     ret = v4l2_set_control(v, setting, value);
 
 end_block:
+    error = v4l2_get_last_error();
     v4l2_unref(v);
+    errno_set(error);
 
     return ret;
 }
@@ -332,7 +333,7 @@ end_block:
 __PUB_API__ int v4l2_get_setting(const v4l2_t *v4l2, enum v4l2_setting setting)
 {
     struct v4l2_s *v = v4l2_ref((v4l2_t *)v4l2);
-    int value = -1;
+    int value = -1, error;
 
     errno_clear();
 
@@ -349,7 +350,9 @@ __PUB_API__ int v4l2_get_setting(const v4l2_t *v4l2, enum v4l2_setting setting)
     value = v4l2_get_control(v, setting);
 
 end_block:
+    error = v4l2_get_last_error();
     v4l2_unref(v);
+    errno_set(error);
 
     return value;
 }

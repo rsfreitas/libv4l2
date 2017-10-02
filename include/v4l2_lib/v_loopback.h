@@ -31,6 +31,11 @@
 # ifndef _LIBV4L2_H
 #  error "Never use <v_loopback.h> directly; include <libv4l2.h> instead."
 # endif
+#else
+
+/* Internal library API */
+void loopback_stop(struct v4l2_s *loopback);
+
 #endif
 
 /**
@@ -42,11 +47,14 @@
  *
  * @param [in] device: The define name.
  * @param [in] source: The original video4linux2 opened device.
+ * @param [in] auto_replication: A boolean flag to initialize the internal frame
+ *                               replication to the opened loopback device.
  *
  * @return On success returns a v4l2_t object to be used as a loopback device or
  *         NULL otherwise.
  */
-v4l2_t *v4l2_loopback_open(const char *device, const v4l2_t *source);
+v4l2_t *v4l2_loopback_open(const char *device, const v4l2_t *source,
+                           bool auto_replication);
 
 /**
  * @name v4l2_loopback_write_frame

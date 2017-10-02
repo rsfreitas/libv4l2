@@ -104,6 +104,8 @@ v4l2_image_t *v4l2_grab_image(v4l2_t *v4l2, bool dup);
  * @name v4l2_set_setting
  * @brief Sets a setting into the card.
  *
+ * @value should be in the 0-255 range.
+ *
  * @param [in] v4l2: The v4l2_t object.
  * @param [in] setting: The requested setting.
  * @param [in] value: The new value.
@@ -115,6 +117,8 @@ int v4l2_set_setting(const v4l2_t *v4l2, enum v4l2_setting setting, int value);
 /**
  * @name v4l2_get_setting
  * @brief Gets the current setting value from the card.
+ *
+ * The setting value returned should be in the 0-255 range.
  *
  * @param [in] v4l2: The v4l2_t object.
  * @param [in] setting: The requested setting.

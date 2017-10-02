@@ -56,11 +56,13 @@ static const char *__description[] = {
     cl_tr_noop("Error creating image grabbing thread"),
     cl_tr_noop("Error while starting image grabbing thread"),
     cl_tr_noop("Grabbing thread inactive"),
-    cl_tr_noop("Error setting streaming parameters")
+    cl_tr_noop("Error setting streaming parameters"),
+    cl_tr_noop("Invalid value")
 };
 
 static const char *__unknown_error = cl_tr_noop("Unknown error");
-#define __errno        (*cl_errno_storage())
+cl_error_storage_declare(__storage__)
+#define __errno        (*cl_errno_storage(&__storage__))
 
 void errno_clear(void)
 {

@@ -195,14 +195,15 @@ int v4l2_open_device(struct v4l2_s *v4l2, const char *device, bool loopback)
             errno_set(V4L2_NO_CAP_STREAMING);
             return -1;
         }
+
+        v4l2->capabilities = cap.capabilities;
+        v4l2->version = cap.version;
+        v4l2->card = strdup((const char *)cap.card);
+        v4l2->driver = strdup((const char *)cap.driver);
+        v4l2->bus_info = strdup((const char *)cap.bus_info);
     }
 
-    v4l2->capabilities = cap.capabilities;
-    v4l2->version = cap.version;
     v4l2->device = strdup(device);
-    v4l2->card = strdup((const char *)cap.card);
-    v4l2->driver = strdup((const char *)cap.driver);
-    v4l2->bus_info = strdup((const char *)cap.bus_info);
 
     return 0;
 }
@@ -246,6 +247,12 @@ static void destroy_v4l2(const struct cl_ref_s *ref)
     if (v->fd != -1)
         close_video_device(v->fd);
 
+    if (v->parent != NULL)
+        v4l2_unref(v->parent);
+
+    if (v->loopback_thread != NULL)
+        loopback_stop(v);
+
     free(v);
     v = NULL;
 }
@@ -263,11 +270,82 @@ struct v4l2_s *new_v4l2_s(void)
 
     v->fd = -1;
     v->device_initialized = false;
+    v->parent = NULL;
+    v->loopback_thread = NULL;
 
     /* Initialize reference count */
     v->ref.count = 1;
     v->ref.free = destroy_v4l2;
 
     return v;
+}
+
+void lock_init(struct v4l2_s *v4l2)
+{
+    pthread_rwlockattr_t attr;
+
+    if (NULL == v4l2)
+        return;
+
+    /* Creates the read/write lock to the loopback devices */
+    pthread_rwlockattr_init(&attr);
+    pthread_rwlockattr_setkind_np(&attr,
+                                  PTHREAD_RWLOCK_PREFER_WRITER_NONRECURSIVE_NP);
+
+    pthread_rwlock_init(&v4l2->lock, &attr);
+
+    /* Creates the continuous grabbing mutex/condition */
+    pthread_mutex_init(&v4l2->grab_mutex, NULL);
+    pthread_cond_init(&v4l2->grab_cond, NULL);
+}
+
+void lock_uninit(struct v4l2_s *v4l2)
+{
+    if (NULL == v4l2)
+        return;
+
+    pthread_cond_destroy(&v4l2->grab_cond);
+    pthread_mutex_destroy(&v4l2->grab_mutex);
+    pthread_rwlock_destroy(&v4l2->lock);
+}
+
+void read_lock(struct v4l2_s *v4l2)
+{
+    if (NULL == v4l2)
+        return;
+
+    pthread_rwlock_rdlock(&v4l2->lock);
+}
+
+void read_unlock(struct v4l2_s *v4l2)
+{
+    if (NULL == v4l2)
+        return;
+
+    pthread_rwlock_unlock(&v4l2->lock);
+}
+
+void write_lock(struct v4l2_s *v4l2)
+{
+    if (NULL == v4l2)
+        return;
+
+    pthread_rwlock_wrlock(&v4l2->lock);
+}
+
+void write_unlock(struct v4l2_s *v4l2)
+{
+    if (NULL == v4l2)
+        return;
+
+    pthread_rwlock_unlock(&v4l2->lock);
+}
+
+bool is_setting_value_valid(int value)
+{
+    if ((value >= 0) && (value <= DEFAULT_MAX_CTRL_RANGE))
+        return true;
+
+    return false;
 }
 

@@ -114,6 +114,11 @@ struct v4l2_s {
 
     /* reference count */
     struct cl_ref_s         ref;
+
+    /* loopback */
+    pthread_rwlock_t        lock;
+    struct v4l2_s           *parent;
+    cl_thread_t             *loopback_thread;
 };
 
 #include "v_grab.h"

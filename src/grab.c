@@ -73,16 +73,19 @@ static void *grab_thread(cl_thread_t *arg)
         buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
         buf.memory = V4L2_MEMORY_MMAP;
 
-        if (_ioctl(v4l2->fd, VIDIOC_DQBUF, &buf) < 0)
+        if (_ioctl(v4l2->fd, VIDIOC_DQBUF, &buf) < 0) {
             if (errno != EIO) {
                 /* TODO: Signal this to the user */
                 goto end_thread;
             }
+        }
 
         pthread_mutex_lock(&v4l2->grab_mutex);
 
+        write_lock(v4l2);
         v4l2->current_image.data_size = v4l2->buffers[buf.index].length;
         v4l2->captured_buffer_index = buf.index;
+        write_unlock(v4l2);
 
         /* We have a new frame */
         v4l2->have_new_frame = true;
@@ -107,9 +110,7 @@ int grab_start(struct v4l2_s *v4l2)
     v4l2->framecount = 0;
     v4l2->thread_active = true;
 
-    pthread_mutex_init(&v4l2->grab_mutex, NULL);
-    pthread_cond_init(&v4l2->grab_cond, NULL);
-
+    lock_init(v4l2);
     v4l2->grab_thread = cl_thread_spawn(CL_THREAD_JOINABLE, grab_thread, v4l2);
 
     if (NULL == v4l2->grab_thread) {
@@ -134,6 +135,7 @@ void grab_stop(struct v4l2_s *v4l2)
 
     v4l2->thread_active = false;
     cl_thread_destroy(v4l2->grab_thread);
+    lock_uninit(v4l2);
 }
 
 struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup)
@@ -163,7 +165,7 @@ struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup)
         img->data = cl_memdup(v4l2->buffers[v4l2->captured_buffer_index].start,
                               v4l2->current_image.data_size);
     } else
-        img->data = v4l2->buffers[v4l2->captured_buffer_index].start;
+        img->data = v4l2->buffers[v4l2->captured_buffer_index].start,
 
     img->data_size = v4l2->current_image.data_size;
     v4l2->have_new_frame = false;

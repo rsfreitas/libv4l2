@@ -32,6 +32,18 @@
 #include <libv4l2.h>
 #include <collections.h>
 
+volatile bool __finish = false;
+
+static void set_finish(int signum)
+{
+    switch (signum) {
+        case SIGTERM:
+        case SIGINT:
+            __finish = true;
+            break;
+    }
+}
+
 static void usage(void)
 {
     printf("Usage: v4l2 [OPTIONS]\n");
@@ -49,7 +61,7 @@ int main(int argc, char **argv)
     const char *opt = "d:g:hl:\0";
     v4l2_t *v4l2 = NULL, *l_v4l2 = NULL;
     v4l2_image_t *img;
-    int i, option, grabs = -1;
+    int i = 0, option, grabs = -1;
     char *device = NULL, *filename = NULL, *loopback = NULL;
 
     do {
@@ -83,6 +95,8 @@ int main(int argc, char **argv)
     }
 
     cl_init(NULL);
+    cl_trap(SIGTERM, set_finish);
+    cl_trap(SIGINT, set_finish);
     v4l2 = v4l2_open(device, 640, 480, V4L2_IMAGE_FMT_YUYV,
                      V4L2_MODEL_USB_WEBCAM, V4L2_CHANNEL_COMPOSITE);
 
@@ -96,12 +110,6 @@ int main(int argc, char **argv)
             v4l2_bus_info(v4l2));
 
     if (loopback != NULL) {
-        l_v4l2 = v4l2_loopback_open(loopback, v4l2);
-
-        if (NULL == l_v4l2) {
-            printf("Error (2): %s\n", v4l2_strerror(v4l2_get_last_error()));
-            goto end_block;
-        }
     }
 
     /* Sets the device settings */
@@ -112,24 +120,34 @@ int main(int argc, char **argv)
     v4l2_set_setting(v4l2, V4L2_SETTING_SATURATION, 40);
 
     if (loopback != NULL) {
-        while (1) {
-            img = v4l2_grab_image(v4l2, false);
-            v4l2_loopback_write_frame(l_v4l2, img);
-            printf("frame written\n");
-            v4l2_image_unref(img);
+        l_v4l2 = v4l2_loopback_open(loopback, v4l2, true);
+
+        if (NULL == l_v4l2) {
+            printf("Error (2): %s\n", v4l2_strerror(v4l2_get_last_error()));
+            goto end_block;
         }
+
+        while (__finish == false)
+            cl_msleep(1);
 
         v4l2_close(l_v4l2);
     } else {
-        for (i = 0; i < grabs; i++) {
-            img = v4l2_grab_image(v4l2, false);
-            printf("Grab %d: %dx%d, %d bytes\n", i + 1, v4l2_image_width(img),
-                    v4l2_image_height(img), v4l2_image_size(img));
+        if (grabs < 0)
+            printf("Error: You must inform the number of grabs to make\n");
 
-            asprintf(&filename, "test_%02d.raw", i + 1);
-            cl_fsave(filename, v4l2_image_data(img), v4l2_image_size(img));
-            v4l2_image_unref(img);
-            free(filename);
+        while (i < grabs) {
+            img = v4l2_grab_image(v4l2, false);
+
+            if (img != NULL) {
+                printf("Grab %d: %dx%d, %d bytes\n", i + 1, v4l2_image_width(img),
+                        v4l2_image_height(img), v4l2_image_size(img));
+
+                asprintf(&filename, "test_%02d.raw", i + 1);
+                cl_fsave(filename, v4l2_image_data(img), v4l2_image_size(img));
+                v4l2_image_unref(img);
+                free(filename);
+                i++;
+            }
         }
     }
 

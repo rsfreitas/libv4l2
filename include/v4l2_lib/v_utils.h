@@ -43,6 +43,13 @@ bool is_supported_channel(enum v4l2_channel channel);
 int close_video_device(int fd);
 int v4l2_open_device(struct v4l2_s *v4l2, const char *device, bool loopback);
 struct v4l2_s *new_v4l2_s(void);
+void lock_init(struct v4l2_s *v4l2);
+void lock_uninit(struct v4l2_s *v4l2);
+void read_lock(struct v4l2_s *v4l2);
+void read_unlock(struct v4l2_s *v4l2);
+void write_lock(struct v4l2_s *v4l2);
+void write_unlock(struct v4l2_s *v4l2);
+bool is_setting_value_valid(int value);
 
 #endif
 

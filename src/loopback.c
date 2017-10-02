@@ -34,8 +34,29 @@
  *
  */
 
+static void *loopback_thread(cl_thread_t *arg)
+{
+    struct v4l2_s *loopback = cl_thread_get_user_data(arg),
+                  *parent = loopback->parent;
+
+    cl_thread_set_state(arg, CL_THREAD_ST_CREATED);
+    cl_thread_set_state(arg, CL_THREAD_ST_INITIALIZED);
+
+    while (loopback->thread_active) {
+        read_lock(loopback->parent);
+
+        /* write frame */
+        write(loopback->fd, parent->buffers[parent->captured_buffer_index].start,
+              parent->current_image.data_size);
+
+        read_unlock(loopback->parent);
+    }
+
+    return NULL;
+}
+
 static int v4l2_init_loopback_device(struct v4l2_s *loopback,
-    const struct v4l2_s *source)
+    const struct v4l2_s *source, bool auto_replication)
 {
 	struct v4l2_format fmt;
 	struct v4l2_streamparm setfps;
@@ -62,6 +83,28 @@ static int v4l2_init_loopback_device(struct v4l2_s *loopback,
         return 1;
     }
 
+    /* set our parent */
+    loopback->parent = v4l2_ref((v4l2_t *)source);
+
+    /* launch the loopback thread */
+    if (auto_replication) {
+        loopback->thread_active = true;
+        loopback->loopback_thread = cl_thread_spawn(CL_THREAD_JOINABLE,
+                                                    loopback_thread, loopback);
+
+        if (NULL == loopback->loopback_thread) {
+            loopback->thread_active = false;
+            errno_set(V4L2_GRAB_THREAD_CREATION_ERROR);
+            return -1;
+        }
+
+        if (cl_thread_wait_startup(loopback->loopback_thread) != 0) {
+            loopback->thread_active = false;
+            errno_set(V4L2_GRAB_THREAD_START_ERROR);
+            return -1;
+        }
+    }
+
 	return 0;
 }
 
@@ -73,11 +116,24 @@ static int loopback_write_frame(struct v4l2_s *loopback,
 
 /*
  *
+ * Internal API
+ *
+ */
+
+void loopback_stop(struct v4l2_s *loopback)
+{
+    loopback->thread_active = false;
+    cl_thread_destroy(loopback->loopback_thread);
+}
+
+/*
+ *
  * Exported API
  *
  */
 
-__PUB_API__ v4l2_t *v4l2_loopback_open(const char *device, const v4l2_t *source)
+__PUB_API__ v4l2_t *v4l2_loopback_open(const char *device, const v4l2_t *source,
+    bool auto_replication)
 {
     struct v4l2_s *v4l2 = NULL;
 
@@ -96,7 +152,7 @@ __PUB_API__ v4l2_t *v4l2_loopback_open(const char *device, const v4l2_t *source)
     if (v4l2_open_device(v4l2, device, true) < 0)
         return NULL;
 
-    if (v4l2_init_loopback_device(v4l2, source) < 0)
+    if (v4l2_init_loopback_device(v4l2, source, auto_replication) < 0)
         return NULL;
 
     return v4l2;

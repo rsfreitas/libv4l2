@@ -1,6 +1,11 @@
 # libv4l2
 
-A video4linux2 simple library.
+A simple video4linux2 library.
+
+## Features
+
+* Internal continuous grabbing.
+* Loopback frame replication.
 
 ## License
 

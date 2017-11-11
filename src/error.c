@@ -61,22 +61,34 @@ static const char *__description[] = {
 };
 
 static const char *__unknown_error = cl_tr_noop("Unknown error");
-cl_error_storage_declare(__storage__)
-#define __errno        (*cl_errno_storage(&__storage__))
+
+/* The internal error storage structure */
+struct error_storage {
+    int error;
+};
+
+cl_error_storage_declare(__storage__, sizeof(struct error_storage))
+#define __errno         (cl_errno_storage(&__storage__))
 
 void errno_clear(void)
 {
-    __errno = V4L2_ERROR_NO_ERROR;
+    struct error_storage *e = __errno;
+
+    e->error = V4L2_ERROR_NO_ERROR;
 }
 
 void errno_set(enum v4l2_error_code code)
 {
-    __errno = code;
+    struct error_storage *e = __errno;
+
+    e->error = code;
 }
 
 enum v4l2_error_code v4l2_get_last_error(void)
 {
-    return __errno;
+    struct error_storage *e = __errno;
+
+    return e->error;
 }
 
 const char *v4l2_strerror(enum v4l2_error_code code)

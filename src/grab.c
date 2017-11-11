@@ -160,6 +160,8 @@ struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup)
     if (NULL == img)
         goto end_block;
 
+    img->data_size = v4l2->current_image.data_size;
+
     if (dup == true) {
         img->free_data = true;
         img->data = cl_memdup(v4l2->buffers[v4l2->captured_buffer_index].start,
@@ -167,7 +169,6 @@ struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup)
     } else
         img->data = v4l2->buffers[v4l2->captured_buffer_index].start,
 
-    img->data_size = v4l2->current_image.data_size;
     v4l2->have_new_frame = false;
 
 end_block:

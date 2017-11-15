@@ -72,18 +72,18 @@
 #define DEFAULT_LOOPBACK_FPS    30
 
 struct v4l2_image_s {
-    unsigned char           *data;
     bool                    free_data;
     unsigned int            data_size;
     int                     width;
     int                     height;
     enum v4l2_image_format  format;
     struct cl_ref_s         ref;
+    unsigned char           *data;
 };
 
 struct v4l2_buffer_s {
-    void                    *start;
     size_t                  length;
+    void                    *start;
 };
 
 struct v4l2_s {

@@ -77,7 +77,7 @@ void errno_clear(void)
     e->error = V4L2_ERROR_NO_ERROR;
 }
 
-void errno_set(enum v4l2_error_code code)
+void errno_set(int code)
 {
     struct error_storage *e = __errno;
 

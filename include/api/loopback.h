@@ -6,7 +6,7 @@
  * Created at: Sun Oct  1 10:58:04 2017
  * Project: libv4l2
  *
- * Copyright (C) 2017 Rodrigo Freitas
+ * Copyright (C) 2017 Rodrigo Freitas All rights reserved
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,18 +24,13 @@
  * USA
  */
 
-#ifndef _LIBV4L2_V_LOOPBACK_H
-#define _LIBV4L2_V_LOOPBACK_H          1
+#ifndef _LIBV4L2_API_LOOPBACK_H
+#define _LIBV4L2_API_LOOPBACK_H
 
 #ifndef LIBV4L2_COMPILE
 # ifndef _LIBV4L2_H
-#  error "Never use <v_loopback.h> directly; include <libv4l2.h> instead."
+#  error "Never use <loopback.h> directly; include <libv4l2.h> instead."
 # endif
-#else
-
-/* Internal library API */
-void loopback_stop(struct v4l2_s *loopback);
-
 #endif
 
 /**

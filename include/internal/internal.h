@@ -6,7 +6,7 @@
  * Created at: Fri Feb 10 09:16:19 2017
  * Project: libv4l2
  *
- * Copyright (C) 2017 Rodrigo Freitas
+ * Copyright (C) 2017 Rodrigo Freitas All rights reserved
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,8 +24,8 @@
  * USA
  */
 
-#ifndef _LIBV4L2_V_INTERNAL_H
-#define _LIBV4L2_V_INTERNAL_H          1
+#ifndef _LIBV4L2_INTERNAL_INTERNAL_H
+#define _LIBV4L2_INTERNAL_INTERNAL_H
 
 #ifndef _STDINT_H
 # include <stdint.h>
@@ -48,13 +48,13 @@
 #endif
 
 #ifndef _COLLECTIONS_H
-# include <collections.h>
+# include <collections/collections.h>
 #endif
 
 /*
  * An internal representation of a public function. It does not affect the code
- * or the function visibility. Its objective is only to let clear what is and
- * what is not been exported from library by looking at the code.
+ * or the function visibility. Its objective is only to let it clear what is and
+ * what is not being exported from the library by looking at the code.
  *
  * Every exported function must have this at the beginning of its declaration.
  * Example:
@@ -121,9 +121,12 @@ struct v4l2_s {
     cl_thread_t             *loopback_thread;
 };
 
-#include "v_grab.h"
-#include "v_utils.h"
-#include "v_mmap.h"
+#include "error.h"
+#include "grab.h"
+#include "image.h"
+#include "loopback.h"
+#include "mmap.h"
+#include "utils.h"
 
 #endif
 

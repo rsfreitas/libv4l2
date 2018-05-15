@@ -6,7 +6,7 @@
  * Created at: Fri Feb 10 09:06:20 2017
  * Project: libv4l2
  *
- * Copyright (C) 2017 Rodrigo Freitas
+ * Copyright (C) 2017 Rodrigo Freitas All rights reserved
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,14 +24,8 @@
  * USA
  */
 
-#ifndef _LIBV4L2_V_UTILS_H
-#define _LIBV4L2_V_UTILS_H          1
-
-#ifndef LIBV4L2_COMPILE
-# ifndef _LIBV4L2_H
-#  error "Never use <v_utils.h> directly; include <libv4l2.h> instead."
-# endif
-#endif
+#ifndef _LIBV4L2_INTERNAL_UTILS_H
+#define _LIBV4L2_INTERNAL_UTILS_H
 
 int _ioctl(int fd, int request, void *argp);
 int v4l2_format_to_videodev(enum v4l2_image_format format);

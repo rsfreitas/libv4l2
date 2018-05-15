@@ -6,7 +6,7 @@
  * Created at: Thu Feb 16 13:46:33 2017
  * Project: libv4l2
  *
- * Copyright (c) 2017 All rights reserved
+ * Copyright (C) 2017 Rodrigo Freitas All rights reserved
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,12 +24,12 @@
  * USA
  */
 
-#ifndef _LIBV4L2_V_V4L2_H
-#define _LIBV4L2_V_V4L2_H          1
+#ifndef _LIBV4L2_API_V4L2_H
+#define _LIBV4L2_API_V4L2_H
 
 #ifndef LIBV4L2_COMPILE
 # ifndef _LIBV4L2_H
-#  error "Never use <v_v4l2.h> directly; include <libv4l2.h> instead."
+#  error "Never use <v4l2.h> directly; include <libv4l2.h> instead."
 # endif
 #endif
 

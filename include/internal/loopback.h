@@ -3,10 +3,10 @@
  * Description:
  *
  * Author: Rodrigo Freitas
- * Created at: Thu Feb 16 14:52:04 2017
+ * Created at: Sun Oct  1 10:58:04 2017
  * Project: libv4l2
  *
- * Copyright (C) 2017 Rodrigo Freitas
+ * Copyright (C) 2017 Rodrigo Freitas All rights reserved
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,18 +24,11 @@
  * USA
  */
 
-#ifndef _LIBV4L2_V_GRAB_H
-#define _LIBV4L2_V_GRAB_H          1
+#ifndef _LIBV4L2_INTERNAL_LOOPBACK_H
+#define _LIBV4L2_INTERNAL_LOOPBACK_H
 
-#ifndef LIBV4L2_COMPILE
-# ifndef _LIBV4L2_H
-#  error "Never use <v_grab.h> directly; include <libv4l2.h> instead."
-# endif
-#endif
-
-int grab_start(struct v4l2_s *v4l2);
-void grab_stop(struct v4l2_s *v4l2);
-struct v4l2_image_s *grab_image(struct v4l2_s *v4l2, bool dup);
+/* Internal library API */
+void loopback_stop(struct v4l2_s *loopback);
 
 #endif
 

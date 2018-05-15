@@ -6,7 +6,7 @@
  * Created at: Fri Feb 10 09:06:20 2017
  * Project: libv4l2
  *
- * Copyright (C) 2017 Rodrigo Freitas
+ * Copyright (C) 2017 Rodrigo Freitas All rights reserved
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@
  */
 
 #ifndef _LIBV4L2_H
-#define _LIBV4L2_H          1
+#define _LIBV4L2_H
 
 #ifndef _STDBOOL_H
 # include <stdbool.h>
@@ -76,14 +76,14 @@ typedef void                v4l2_image_t;
 # define MINOR_VERSION      1
 # define RELEASE            7
 
-# include "v4l2_lib/v_internal.h"
+# include "internal/internal.h"
 #endif
 
-#include "v4l2_lib/v_error.h"
-#include "v4l2_lib/v_image.h"
-#include "v4l2_lib/v_info.h"
-#include "v4l2_lib/v_loopback.h"
-#include "v4l2_lib/v_v4l2.h"
+#include "api/error.h"
+#include "api/image.h"
+#include "api/info.h"
+#include "api/loopback.h"
+#include "api/v4l2.h"
 
 #endif
 

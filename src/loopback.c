@@ -46,8 +46,10 @@ static void *loopback_thread(cl_thread_t *arg)
         read_lock(loopback->parent);
 
         /* write frame */
-        write(loopback->fd, parent->buffers[parent->captured_buffer_index].start,
-              parent->current_image.data_size);
+        int _tmp = write(loopback->fd, parent->buffers[parent->captured_buffer_index].start,
+                         parent->current_image.data_size);
+
+        (void)_tmp;
 
         read_unlock(loopback->parent);
     }
